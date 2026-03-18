@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    restart: always
+    ports:
+      - '911:911'
+    environment:
+      DATABASE_URL: "postgresql://root:root@localhost:5505/CHESSTOURNAMENT?schema=public"
+    command: ["node", "dist/main.js"]

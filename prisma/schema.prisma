@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ELO_TRANSACTION {
+  ID_ELO_T     Int     @id @default(autoincrement())
+  ID_PLAYER    Int
+  ID_MATCH     Int
+  ELO_T_AMOUNT Int
+  MATCHES      MATCHES @relation(fields: [ID_MATCH], references: [ID_MATCH], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model MATCHES {
+  ID_MATCH                            Int               @id @default(autoincrement())
+  ID_PLAYER1                          Int
+  ID_PLAYER2                          Int
+  MATCH_DATE                          DateTime?         @db.Date
+  ID_OPENING                          Int?
+  ELO_TRANSACTION                     ELO_TRANSACTION[]
+  OPENINGS                            OPENINGS?         @relation(fields: [ID_OPENING], references: [ID_OPENING], onDelete: NoAction, onUpdate: NoAction)
+  PLAYERS_MATCHES_ID_PLAYER1ToPLAYERS PLAYERS           @relation("MATCHES_ID_PLAYER1ToPLAYERS", fields: [ID_PLAYER1], references: [ID_PLAYER], onDelete: NoAction, onUpdate: NoAction)
+  PLAYERS_MATCHES_ID_PLAYER2ToPLAYERS PLAYERS           @relation("MATCHES_ID_PLAYER2ToPLAYERS", fields: [ID_PLAYER2], references: [ID_PLAYER], onDelete: NoAction, onUpdate: NoAction)
+  PLAYS                               PLAYS[]
+}
+
+model OPENINGS {
+  ID_OPENING    Int             @id @default(autoincrement())
+  OPENING_NAME  String          @db.VarChar(255)
+  MATCHES       MATCHES[]
+  OPENING_PLAYS OPENING_PLAYS[]
+}
+
+model OPENING_PLAYS {
+  ID_OP_PLAY   Int      @id @default(autoincrement())
+  OP_PLAY_CODE String   @db.VarChar(15)
+  ID_OPENING   Int
+  OPENINGS     OPENINGS @relation(fields: [ID_OPENING], references: [ID_OPENING], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model PLAYERS {
+  ID_PLAYER                           Int       @id @default(autoincrement())
+  PLAYER_NAME                         String?   @db.VarChar(255)
+  MATCHES_MATCHES_ID_PLAYER1ToPLAYERS MATCHES[] @relation("MATCHES_ID_PLAYER1ToPLAYERS")
+  MATCHES_MATCHES_ID_PLAYER2ToPLAYERS MATCHES[] @relation("MATCHES_ID_PLAYER2ToPLAYERS")
+}
+
+model PLAYS {
+  ID_PLAY   Int       @id @default(autoincrement())
+  PLAY_CODE String    @db.VarChar(15)
+  ID_MATCH  Int
+  PLAY_TIME DateTime? @db.Time(6)
+  MATCHES   MATCHES   @relation(fields: [ID_MATCH], references: [ID_MATCH], onDelete: NoAction, onUpdate: NoAction)
+}

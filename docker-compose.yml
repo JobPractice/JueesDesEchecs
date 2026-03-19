@@ -1,9 +1,19 @@
 services:
   backend:
     build: .
-    restart: always
+    restart: "no"
     ports:
-      - '911:911'
+      - "911:911"
     environment:
-      DATABASE_URL: "postgresql://root:root@localhost:5505/CHESSTOURNAMENT?schema=public"
-    command: ["node", "dist/main.js"]
+      DATABASE_URL: "postgresql://root:root@db:5432/CHESSTOURNAMENT?schema=public"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: CHESSTOURNAMENT
+    ports:
+      - "5505:5432"
